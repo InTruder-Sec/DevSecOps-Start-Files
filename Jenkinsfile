@@ -16,12 +16,12 @@ pipeline {
         }
         stage('build') {
             steps {
-                sh ```
+                sh '''
                 export MAVEN_HOME=/usr/share/maven
                 export PATH=$PATH:$MAVEN_HOME/bin
                 mvn --version
                 mvn clean package
-                ```
+                '''
             }
         }
     }
