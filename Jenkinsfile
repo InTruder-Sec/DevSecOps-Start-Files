@@ -17,11 +17,16 @@ pipeline {
         stage('build') {
             steps {
                 sh '''
-                export MAVEN_HOME=/opt/maven
-                export PATH=$PATH:$MAVEN_HOME/bin
                 mvn --version
                 mvn clean package
                 '''
+            }
+        }
+        stage('deploy') {
+            steps {
+                sshagent(['tomcat']) {
+                    sh 'scp -o StrictHostKeyChecking=no target/*.war tomcat@13.201.115.68:/home/ubuntu/prod/apache-tomcat-9.0.87/webapps/webapp.war'
+                }
             }
         }
     }
