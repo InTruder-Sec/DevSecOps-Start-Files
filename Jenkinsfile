@@ -6,17 +6,29 @@ pipeline {
     }
 
     stages {
-        stage('Initialize') {
+        // stage('Initialize') {
+        //     steps {
+        //         sh '''
+        //             echo "PATH = ${PATH}"
+        //             echo "M2_HOME = ${M2_HOME}"
+        //         '''
+        //     }
+        // }
+        stage('build') {
             steps {
                 sh '''
-                    echo "PATH = ${PATH}"
-                    echo "M2_HOME = ${M2_HOME}"
+                mvn --version
+                mvn clean package
                 '''
             }
         }
-        stage('build') {
+        stage('deploy') {
             steps {
-                sh 'mvn clean package'
+                sshagent(['tomcat']) {
+                    sh "ssh -o StrictHostKeyChecking=no ubuntu@13.233.22.107 'ls'"
+                    sh "ssh -o StrictHostKeyChecking=no ubuntu@13.233.22.107 'sudo su'"
+                    sh 'scp -o StrictHostKeyChecking=no target/*.war ubuntu@13.233.22.107:/home/ubuntu/prod/apache-tomcat-9.0.87/webapps/'
+                }
             }
         }
     }
